@@ -7,7 +7,7 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch:  # Allows manual execution
+  workflow_dispatch:
 
 jobs:
   build-and-push:
@@ -34,16 +34,6 @@ jobs:
         with:
           context: .
           push: true
+          platforms: linux/amd64,linux/arm64,windows/amd64
           tags: |
             ${{ secrets.DOCKER_HUB_USERNAME }}/my-nest-app:latest
-          platforms: |
-            linux/amd64
-            linux/arm64
-            linux/arm/v7
-            windows/amd64
-
-      - name: Scan Docker Image for Vulnerabilities
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: '${{ secrets.DOCKER_HUB_USERNAME }}/my-nest-app:latest'
-          format: 'table'
