@@ -1,9 +1,13 @@
-name: Build and Push Docker Image
+name: Secure Build & Push Docker Image
 
 on:
   push:
     branches:
-      - main  # Change this if your default branch is different
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:  # Allows manual execution
 
 jobs:
   build-and-push:
@@ -21,6 +25,12 @@ jobs:
 
       - name: Build Docker Image
         run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/my-nest-app:latest .
+
+      - name: Scan Docker Image for Vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ secrets.DOCKER_HUB_USERNAME }}/my-nest-app:latest'
+          format: 'table'
 
       - name: Push Docker Image
         run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/my-nest-app:latest
